@@ -1,7 +1,7 @@
 [WIP] FootPrint
 ===============
 
-FootPritnt(足跡) is summary generator for Github, Trello ... and so activity.
+FootPritnt(足跡) is summary generator for Github activity.
 
 inspire of `furik <https://github.com/pepabo/furik>`_ .
 
@@ -17,16 +17,4 @@ Usage
 
 .. code:: console
 
-    $ footprint activity
-
-Github only
-
-.. code:: console
-
-    $ footprint activity --github
-
-Trello only
-
-.. code:: console
-
-    $ footprint activity --trello
+    $ python  footprint.py [-h] [-f FROM_STR] [-t TO_STR]
