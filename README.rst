@@ -8,9 +8,7 @@ inspire of `furik <https://github.com/pepabo/furik>`_ .
 Install
 ----------
 
-.. code:: console
-
-    $ pip install git+https://github.com/laughk/footprint
+coming soon...
 
 Usage
 --------
