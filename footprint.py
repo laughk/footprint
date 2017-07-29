@@ -20,6 +20,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('-f', '--from', dest='from_str', default='', type=str)
     parser.add_argument('-t', '--to', dest='to_str', default='', type=str)
+    parser.add_argument('-P', '--private', dest='needs_private', action='store_true', default=False)
     args = parser.parse_args()
 
     if args.from_str:
@@ -42,7 +43,7 @@ def main():
     print(header)
     print()
 
-    message_info = generate_user_events(user, from_, to_)
+    message_info = generate_user_events(user, from_, to_, args.needs_private)
     for key in message_info.keys():
         print(f'# {key}')
         print()
@@ -59,7 +60,7 @@ def generate_message_header(from_, to_):
         return 'Activity in {0}\n===='.format(from_.strftime('%Y-%m-%d'))
 
 
-def generate_user_events(user, from_, to_, needs_private):
+def generate_user_events(user, from_, to_, needs_private=False):
 
     message_info = {}
     for event in user.get_events():
