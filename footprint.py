@@ -38,6 +38,10 @@ def main():
     else:
         user = gh.get_user(gh.get_user().login)
 
+    header = generate_message_header(from_, to_)
+    print(header)
+    print()
+
     message_info = generate_user_events(user, from_, to_)
     for key in message_info.keys():
         print(f'# {key}')
@@ -45,6 +49,14 @@ def main():
         for event in message_info[key]:
             print(generate_output_line(event))
         print()
+
+
+def generate_message_header(from_, to_):
+    days_of_period = (to_ - from_).days
+    if days_of_period:
+        return f'{days_of_period} days of activities\n===='
+    else:
+        return 'Activity in {0}\n===='.format(from_.strftime('%Y-%m-%d'))
 
 
 def generate_user_events(user, from_, to_, needs_private):
