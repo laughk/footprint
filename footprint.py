@@ -15,6 +15,8 @@ PICKUP_TYPES = [
 
 def main():
 
+    utc_today = datetime.datetime.utcnow()
+
     parser = argparse.ArgumentParser()
     parser.add_argument('-f', '--from', dest='from_str', default='', type=str)
     parser.add_argument('-t', '--to', dest='to_str', default='', type=str)
@@ -23,12 +25,12 @@ def main():
     if args.from_str:
         from_ = datetime.datetime.strptime(args.from_str, '%Y-%m-%d')
     else:
-        from_ = datetime.datetime.today()
+        from_ = utc_today
 
     if args.to_str:
         to_ = datetime.datetime.strptime(args.to_str, '%Y-%m-%d')
     else:
-        to_ = datetime.datetime.today()
+        to_ = utc_today
 
     gh = Github(settings.GITHUB_TOKEN, per_page=300)
     if settings.GITHUB_USER:
@@ -45,15 +47,20 @@ def main():
         print()
 
 
-def generate_user_events(user, from_, to_):
+def generate_user_events(user, from_, to_, needs_private):
+
     message_info = {}
     for event in user.get_events():
-        if event.created_at >= from_ and event.created_at <= to_:
-            # if event.type in pickup_types and event.raw_data['public']:
-            if event.type in PICKUP_TYPES:
-                if not message_info.get(event.repo.name):
-                    message_info[event.repo.name] = []
-                message_info[event.repo.name].append(event)
+
+        from_delta = from_ - event.created_at
+        to_delta = to_ - event.created_at
+
+        if from_delta.days <= 0 and to_delta.days >= 0:
+            if needs_private or event.raw_data['public']:
+                if event.type in PICKUP_TYPES:
+                    if not message_info.get(event.repo.name):
+                        message_info[event.repo.name] = []
+                    message_info[event.repo.name].append(event)
 
     return message_info
 
