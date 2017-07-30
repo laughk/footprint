@@ -2,6 +2,8 @@ import argparse
 import datetime
 
 from github import Github
+
+from footprint import gitlab
 import settings
 
 PICKUP_TYPES = [
@@ -15,7 +17,7 @@ PICKUP_TYPES = [
 
 def main():
 
-    utc_today = datetime.datetime.utcnow()
+    today = datetime.datetime.today()
 
     parser = argparse.ArgumentParser()
     parser.add_argument('-f', '--from', dest='from_str', default='', type=str)
@@ -26,12 +28,16 @@ def main():
     if args.from_str:
         from_ = datetime.datetime.strptime(args.from_str, '%Y-%m-%d')
     else:
-        from_ = utc_today
+        from_ = today
 
     if args.to_str:
         to_ = datetime.datetime.strptime(args.to_str, '%Y-%m-%d')
     else:
-        to_ = utc_today
+        to_ = today
+
+    header = generate_message_header(from_, to_)
+    print(header)
+    print()
 
     gh = Github(settings.GITHUB_TOKEN, per_page=300)
     if settings.GITHUB_USER:
@@ -39,16 +45,21 @@ def main():
     else:
         user = gh.get_user(gh.get_user().login)
 
-    header = generate_message_header(from_, to_)
-    print(header)
-    print()
-
-    message_info = generate_user_events(user, from_, to_, args.needs_private)
-    for key in message_info.keys():
-        print(f'# {key}')
+    gh_message_info = generate_user_events(user, from_, to_, args.needs_private)
+    for key in gh_message_info.keys():
+        print(f'### {key}')
         print()
-        for event in message_info[key]:
+        for event in gh_message_info[key]:
             print(generate_output_line(event))
+        print()
+
+    gl = gitlab.Gitlab(private_token=settings.GITLAB_COM_TOKEN)
+    gl_events = gl.user_events(from_, to_)
+    for key in gl_events:
+        print(f'### {key}')
+        print()
+        for event in gl_events[key]:
+            print(gitlab.generate_output_line(event))
         print()
 
 
