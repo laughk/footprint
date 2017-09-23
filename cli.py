@@ -1,21 +1,16 @@
 import argparse
 import datetime
 
-from github import Github
+from footprint.modules import footprintGitlab
+from footprint.modules import footprintGithub
+# from footprint.modules import config
 
-from footprint import gitlab
 import settings
-
-PICKUP_TYPES = [
-    'IssuesEvent',
-    'PullRequestEvent',
-    'PullRequestReviewCommentEvent',
-    'IssueCommentEvent',
-    'CommitCommentEvent',
-]
 
 
 def main():
+
+    # config.import_config()
 
     today = datetime.datetime.today()
 
@@ -23,6 +18,9 @@ def main():
     parser.add_argument('-f', '--from', dest='from_str', default='', type=str)
     parser.add_argument('-t', '--to', dest='to_str', default='', type=str)
     parser.add_argument('-P', '--private', dest='needs_private', action='store_true', default=False)
+    parser.add_argument(
+            '--gl', dest='enable_gitlab', action='store_true', default=False,
+            help='[Experimental] enable getting status from gitlab.com.')
     args = parser.parse_args()
 
     if args.from_str:
@@ -36,31 +34,14 @@ def main():
         to_ = today
 
     header = generate_message_header(from_, to_)
-    print(header)
-    print()
+    print(f'{header}\n')
 
-    gh = Github(settings.GITHUB_TOKEN, per_page=300)
-    if settings.GITHUB_USER:
-        user = gh.get_user(settings.GITHUB_USER)
-    else:
-        user = gh.get_user(gh.get_user().login)
+    gh = footprintGithub(settings.GITHUB_TOKEN, per_page=300)
+    gh.print_activity_of_repository(from_, to_, args.needs_private)
 
-    gh_message_info = generate_user_events(user, from_, to_, args.needs_private)
-    for key in gh_message_info.keys():
-        print(f'### {key}')
-        print()
-        for event in gh_message_info[key]:
-            print(generate_output_line(event))
-        print()
-
-    gl = gitlab.Gitlab(private_token=settings.GITLAB_COM_TOKEN)
-    gl_events = gl.user_events(from_, to_)
-    for key in gl_events:
-        print(f'### {key}')
-        print()
-        for event in gl_events[key]:
-            print(gitlab.generate_output_line(event))
-        print()
+    if args.enable_gitlab:
+        gl = footprintGitlab(private_token=settings.GITLAB_COM_TOKEN)
+        gl.print_activity_of_repository(from_, to_, args.needs_private)
 
 
 def generate_message_header(from_, to_):
@@ -69,68 +50,6 @@ def generate_message_header(from_, to_):
         return f'{days_of_period} days of activities\n===='
     else:
         return 'Activity in {0}\n===='.format(from_.strftime('%Y-%m-%d'))
-
-
-def generate_user_events(user, from_, to_, needs_private=False):
-
-    message_info = {}
-    for event in user.get_events():
-
-        from_delta = from_ - event.created_at
-        to_delta = to_ - event.created_at
-
-        if from_delta.days <= 0 and to_delta.days >= 0:
-            if needs_private or event.raw_data['public']:
-                if event.type in PICKUP_TYPES:
-                    if not message_info.get(event.repo.name):
-                        message_info[event.repo.name] = []
-                    message_info[event.repo.name].append(event)
-
-    return message_info
-
-
-def generate_output_line(event):
-
-    result = {'title': '', 'body': '', 'link': ''}
-
-    if event.type == 'IssueCommentEvent':
-
-        result['title'] = event.payload["issue"]["title"] + '(comment)'
-        result['link'] = event.payload['comment']['html_url']
-
-        if len(event.payload["comment"]["body"]) > 30:
-            result['body'] = repr(event.payload["comment"]["body"])[:30] + "...'"
-        else:
-            result['body'] = repr(event.payload["comment"]["body"])
-
-    elif event.type == 'PullRequestReviewCommentEvent':
-        result['title'] = event.payload["pull_request"]["title"] + '(comment)'
-        result['link'] = event.payload['comment']['html_url']
-
-        if len(event.payload["comment"]["body"]) > 30:
-            result['body'] = repr(event.payload["comment"]["body"])[:30] + "...'"
-        else:
-            result['body'] = repr(event.payload["comment"]["body"])
-
-    elif event.type == 'IssuesEvent':
-        result['title'] = event.payload['action']
-        result['link'] = event.payload['issue']['html_url']
-
-        if len(event.payload["issue"]["title"]) > 30:
-            result['body'] = repr(event.payload["issue"]["title"])[:30] + "...'"
-        else:
-            result['body'] = repr(event.payload["issue"]["title"])
-
-    elif event.type == 'PullRequestEvent':
-        result['title'] = event.payload['action']
-        result['link'] = event.payload['pull_request']['html_url']
-
-        if len(event.payload["pull_request"]["title"]) > 30:
-            result['body'] = repr(event.payload["pull_request"]["title"])[:30] + "...'"
-        else:
-            result['body'] = repr(event.payload["pull_request"]["title"])
-
-    return '- [{title}]({link}): {body}'.format(**result)
 
 
 if __name__ == '__main__':
