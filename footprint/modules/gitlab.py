@@ -23,7 +23,7 @@ PICKUP_TYPE = {
 }
 
 
-class Gitlab(object):
+class footprintGitlab(object):
     def __init__(self, private_token=None,
                  gitlab_url='https://gitlab.com', per_page=100, max_page=3):
 
@@ -46,7 +46,7 @@ class Gitlab(object):
     def _request_to_api(self, path, query, api_version='v4'):
 
         result = {'body': None, 'info': None}
-        print(f'{self.api_entry_point}{path}?{query}')
+        # print(f'{self.api_entry_point}{path}?{query}')
 
         req = urllib.request.Request(
                 url=f'{self.api_entry_point}{path}?{query}',
@@ -89,13 +89,13 @@ class Gitlab(object):
             else:
                 query_data['page'] = _events["info"]["X-Next-Page"]
 
-        print('finish')
+        # print('finish')
         return self.user_events_parse(events, from_, to_)
 
     def user_events_parse(self, events, from_, to_):
         result = {}
         for event in events:
-            print(event)
+            # print(event)
             if event.get('action_name') in PICKUP_TYPE['action']:
                 event_created_at = dateutil.parser.parse(event['created_at'])
 
@@ -146,49 +146,57 @@ class Gitlab(object):
         else:
             return ''
 
-        req = urllib.request.Request(url=request_url, headers=self.headers) 
+        req = urllib.request.Request(url=request_url, headers=self.headers)
 
         with urllib.request.urlopen(req) as res:
             self.target_info[f'p{project_id}t{target_id}'] = json.load(res)
 
         return self.target_info[f'p{project_id}t{target_id}']['web_url']
 
+    def print_activity_of_repository(self, from_, to_, needs_private=False):
+        gl_events = self.user_events(from_, to_)
+        for key in gl_events:
+            print(f'### {key}\n')
+            for event in gl_events[key]:
+                print(self.generate_output_line(event))
+            print()
 
-def generate_output_line(event):
-    result = {'title': '', 'body': '', 'link': ''}
+    @classmethod
+    def generate_output_line(cls, event):
+        result = {'title': '', 'body': '', 'link': ''}
 
-    if event['action_name'] == 'opened':
-        result['title'] = event["action_name"]
-        result['link'] = event['_target_url']
+        if event['action_name'] == 'opened':
+            result['title'] = event["action_name"]
+            result['link'] = event['_target_url']
 
-        if len(event["target_title"]) > 30:
-            result['body'] = repr(event["target_title"])[:30] + '...'
-        else:
-            result['body'] = repr(event["target_title"])
+            if len(event["target_title"]) > 30:
+                result['body'] = repr(event["target_title"])[:30] + '...'
+            else:
+                result['body'] = repr(event["target_title"])
 
-    elif event['action_name'] == 'commented on':
-        result['title'] = event["target_title"] + '(comment)'
-        result['link'] = event['_target_url']
+        elif event['action_name'] == 'commented on':
+            result['title'] = event["target_title"] + '(comment)'
+            result['link'] = event['_target_url']
 
-        if len(event['note']['body']) > 30:
-            result['body'] = repr(event['note']['body'])[:30] + '...'
-        else:
-            result['body'] = repr(event['note']['body'])
+            if len(event['note']['body']) > 30:
+                result['body'] = repr(event['note']['body'])[:30] + '...'
+            else:
+                result['body'] = repr(event['note']['body'])
 
-    elif event['action_name'] == 'closed':
+        elif event['action_name'] == 'closed':
 
-        result['title'] = event["action_name"]
-        result['link'] = event['_target_url']
+            result['title'] = event["action_name"]
+            result['link'] = event['_target_url']
 
-        if len(event["target_title"]) > 30:
-            result['body'] = repr(event["target_title"])[:30] + '...'
-        else:
-            result['body'] = repr(event["target_title"])
+            if len(event["target_title"]) > 30:
+                result['body'] = repr(event["target_title"])[:30] + '...'
+            else:
+                result['body'] = repr(event["target_title"])
 
-    elif event['action_name'] == 'created':
+        elif event['action_name'] == 'created':
 
-        result['title'] = event['_target_url']
-        result['link'] = event['_target_url']
-        result['body'] = event["action_name"]
+            result['title'] = event['_target_url']
+            result['link'] = event['_target_url']
+            result['body'] = event["action_name"]
 
-    return '- [{title}]({link}): {body}'.format(**result)
+        return '- [{title}]({link}): {body}'.format(**result)
