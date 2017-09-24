@@ -13,9 +13,15 @@ def main():
     today = datetime.datetime.today()
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('-f', '--from', dest='from_str', default='', type=str)
-    parser.add_argument('-t', '--to', dest='to_str', default='', type=str)
-    parser.add_argument('-P', '--private', dest='needs_private', action='store_true', default=False)
+    parser.add_argument(
+            '-f', '--from', dest='from_str', default='', type=str,
+            help='set start of date formated "YYYY-MM-DD". (default: current day)')
+    parser.add_argument(
+            '-t', '--to', dest='to_str', default='', type=str,
+            help='set wend of start date formated "YYYY-MM-DD". (default: current day)')
+    parser.add_argument(
+            '-P', '--private', dest='needs_private', action='store_true',
+            help='enable get data from private repository. (default: disable)')
     parser.add_argument(
             '--gl', dest='enable_gitlab', action='store_true',
             help='[Experimental] enable getting status from gitlab.com.')
