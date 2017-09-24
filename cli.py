@@ -18,7 +18,7 @@ def main():
             help='set start of date formated "YYYY-MM-DD". (default: current day)')
     parser.add_argument(
             '-t', '--to', dest='to_str', default='', type=str,
-            help='set wend of start date formated "YYYY-MM-DD". (default: current day)')
+            help='set end of start date formated "YYYY-MM-DD". (default: current day)')
     parser.add_argument(
             '-P', '--private', dest='needs_private', action='store_true',
             help='enable get data from private repository. (default: disable)')
