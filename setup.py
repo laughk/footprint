@@ -11,9 +11,6 @@ setup(
         [console_scripts]
         footprint = cli:main
     ''',
-    py_module=[
-        'footprint'
-    ],
     url='https://github.com/laughk/footprint',
     author='Kei Iwasaki',
     author_email='me@laughk.org',
