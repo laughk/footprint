@@ -1,7 +1,7 @@
-[WIP] FootPrint
+footprint
 ===============
 
-FootPritnt(足跡) is summary generator for Github activity.
+footpritnt(足跡) is summary generator for Github/Gitlab.com activity.
 
 inspire of `furik <https://github.com/pepabo/furik>`_ .
 
