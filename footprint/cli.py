@@ -1,9 +1,9 @@
 import argparse
 import datetime
 
-from footprint.modules import footprintGitlab
-from footprint.modules import footprintGithub
-from footprint.modules.config import footprint_config
+from .modules import footprintGitlab
+from .modules import footprintGithub
+from .modules.config import footprint_config
 
 
 def main():

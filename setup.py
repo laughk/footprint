@@ -17,7 +17,7 @@ setup(
     ],
     entry_points='''
         [console_scripts]
-        footprint = cli:main
+        footprint = footprint.cli:main
     ''',
     url='https://github.com/laughk/footprint',
     author='Kei Iwasaki',
