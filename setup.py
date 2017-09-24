@@ -16,7 +16,7 @@ setup(
     author_email='me@laughk.org',
     license='MIT License',
     classifiers=[
-        'Development Status :: 2 - Pre-Alpha'
+        'Development Status :: 2 - Pre-Alpha',
         'License :: OSI Approved :: MIT License',
         'Programming Language :: Python :: 3.6',
     ]
