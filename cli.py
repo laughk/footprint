@@ -3,14 +3,12 @@ import datetime
 
 from footprint.modules import footprintGitlab
 from footprint.modules import footprintGithub
-# from footprint.modules import config
-
-import settings
+from footprint.modules.config import footprint_config
 
 
 def main():
 
-    # config.import_config()
+    config = footprint_config()
 
     today = datetime.datetime.today()
 
@@ -19,7 +17,7 @@ def main():
     parser.add_argument('-t', '--to', dest='to_str', default='', type=str)
     parser.add_argument('-P', '--private', dest='needs_private', action='store_true', default=False)
     parser.add_argument(
-            '--gl', dest='enable_gitlab', action='store_true', default=False,
+            '--gl', dest='enable_gitlab', action='store_true',
             help='[Experimental] enable getting status from gitlab.com.')
     args = parser.parse_args()
 
@@ -36,11 +34,13 @@ def main():
     header = generate_message_header(from_, to_)
     print(f'{header}\n')
 
-    gh = footprintGithub(settings.GITHUB_TOKEN, per_page=300)
+    github_token = config.get('github', 'token')
+    gh = footprintGithub(github_token, per_page=300)
     gh.print_activity_of_repository(from_, to_, args.needs_private)
 
     if args.enable_gitlab:
-        gl = footprintGitlab(private_token=settings.GITLAB_COM_TOKEN)
+        gitlab_token = config.get('gitlab.com', 'token')
+        gl = footprintGitlab(private_token=gitlab_token)
         gl.print_activity_of_repository(from_, to_, args.needs_private)
 
 
