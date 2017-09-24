@@ -1,4 +1,4 @@
-from setuptools import setup
+from setuptools import setup, find_packages
 from footprint import __version__
 
 # Get the long description from the README file
@@ -10,6 +10,7 @@ setup(
     description='footpritnt(足跡) is summary generator for Github/Gitlab.com activity.',
     long_description=long_description,
     version=__version__,
+    packages=find_packages(),
     install_requires=[
         'PyGithub'
     ],
