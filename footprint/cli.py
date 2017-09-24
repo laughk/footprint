@@ -4,6 +4,7 @@ import datetime
 from .modules import footprintGitlab
 from .modules import footprintGithub
 from .modules.config import footprint_config
+from . import __version__
 
 
 def main():
@@ -25,6 +26,8 @@ def main():
     parser.add_argument(
             '--gl', dest='enable_gitlab', action='store_true',
             help='[Experimental] enable getting status from gitlab.com.')
+    parser.add_argument('-v', '--version', action='version', version=__version__)
+
     args = parser.parse_args()
 
     if args.from_str:
