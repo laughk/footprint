@@ -11,11 +11,13 @@ Install
 from PyPI.
 
 .. code:: console
+
     $ pip install footprint
 
 from github repository.
 
 .. code:: console
+
     $ pip intall git+https://github.com/laughk/footprint.git
 
 Usage
