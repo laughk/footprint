@@ -1,9 +1,14 @@
 from setuptools import setup
 from footprint import __version__
 
+# Get the long description from the README file
+with open('README.rst', encoding='utf-8') as f:
+    long_description = f.read()
+
 setup(
     name='footprint',
     description='footpritnt(足跡) is summary generator for Github/Gitlab.com activity.',
+    long_description=long_description,
     version=__version__,
     install_requires=[
         'PyGithub'
