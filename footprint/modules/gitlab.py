@@ -1,6 +1,7 @@
 import json
 import urllib.request
 import urllib.parse
+import datetime
 
 import dateutil.parser
 
@@ -46,7 +47,6 @@ class footprintGitlab(object):
     def _request_to_api(self, path, query, api_version='v4'):
 
         result = {'body': None, 'info': None}
-        # print(f'{self.api_entry_point}{path}?{query}')
 
         req = urllib.request.Request(
                 url=f'{self.api_entry_point}{path}?{query}',
@@ -75,8 +75,8 @@ class footprintGitlab(object):
         events = []
         query_data = {
             'per_page': self.per_page,
-            'before': to_.strftime('%Y-%m-%d'),
-            'after': from_.strftime('%Y-%m-%d')
+            'before': (to_ + datetime.timedelta(days=1)).strftime('%Y-%m-%d'),
+            'after': (from_ - datetime.timedelta(days=1)).strftime('%Y-%m-%d')
         }
 
         while True:
@@ -89,13 +89,11 @@ class footprintGitlab(object):
             else:
                 query_data['page'] = _events["info"]["X-Next-Page"]
 
-        # print('finish')
         return self.user_events_parse(events, from_, to_)
 
     def user_events_parse(self, events, from_, to_):
         result = {}
         for event in events:
-            # print(event)
             if event.get('action_name') in PICKUP_TYPE['action']:
                 event_created_at = dateutil.parser.parse(event['created_at'])
 
