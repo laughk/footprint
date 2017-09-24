@@ -12,7 +12,8 @@ setup(
     version=__version__,
     packages=find_packages(),
     install_requires=[
-        'PyGithub'
+        'PyGithub',
+        'python-dateutil',
     ],
     entry_points='''
         [console_scripts]
