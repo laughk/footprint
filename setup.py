@@ -3,6 +3,7 @@ from footprint import __version__
 
 setup(
     name='footprint',
+    description='footpritnt(足跡) is summary generator for Github/Gitlab.com activity.',
     version=__version__,
     install_requires=[
         'PyGithub'
