@@ -14,6 +14,7 @@ setup(
     install_requires=[
         'PyGithub',
         'python-dateutil',
+        'tzlocal',
     ],
     entry_points='''
         [console_scripts]

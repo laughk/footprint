@@ -1,3 +1,4 @@
+import tzlocal
 from github import Github
 
 
@@ -22,13 +23,13 @@ class footprintGithub(Github):
                 print(self.generate_output_line(event))
             print()
 
-    def generate_user_events(self, from_, to_, needs_private=False):
+    def generate_user_events(self, from_, to_, needs_private=False, timezone=tzlocal.get_localzone()):
 
         message_info = {}
         for event in self.github_user.get_events():
 
-            from_delta = from_ - event.created_at
-            to_delta = to_ - event.created_at
+            from_delta = from_ - timezone.localize(event.created_at)
+            to_delta = to_ - timezone.localize(event.created_at)
 
             if from_delta.days <= 0 and to_delta.days >= 0:
                 if needs_private or event.raw_data['public']:
