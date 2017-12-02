@@ -1,6 +1,8 @@
 import argparse
 import datetime
 
+import tzlocal
+
 from .modules import footprintGitlab
 from .modules import footprintGithub
 from .modules.config import footprint_config
@@ -10,8 +12,7 @@ from . import __version__
 def main():
 
     config = footprint_config()
-
-    today = datetime.datetime.today()
+    local_tz = tzlocal.get_localzone()
 
     parser = argparse.ArgumentParser()
     parser.add_argument(
@@ -30,15 +31,8 @@ def main():
 
     args = parser.parse_args()
 
-    if args.from_str:
-        from_ = datetime.datetime.strptime(args.from_str, '%Y-%m-%d')
-    else:
-        from_ = today
-
-    if args.to_str:
-        to_ = datetime.datetime.strptime(args.to_str, '%Y-%m-%d')
-    else:
-        to_ = today
+    from_ = date_parser(args.from_str, local_tz)
+    to_ = date_parser(args.to_str, local_tz)
 
     header = generate_message_header(from_, to_)
     print(f'{header}\n')
@@ -59,6 +53,20 @@ def generate_message_header(from_, to_):
         return f'{days_of_period} days of activities\n===='
     else:
         return 'Activity in {0}\n===='.format(from_.strftime('%Y-%m-%d'))
+
+
+def date_parser(date_str, timezone):
+
+    today = datetime.datetime.today()
+
+    if date_str:
+        date_result = datetime.datetime.strptime(date_str, '%Y-%m-%d')
+    else:
+        date_result = today
+
+    date_result = timezone.localize(date_result)
+
+    return date_result
 
 
 if __name__ == '__main__':
