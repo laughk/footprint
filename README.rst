@@ -18,7 +18,7 @@ from github repository.
 
 .. code:: console
 
-    $ pip intall git+https://github.com/laughk/footprint.git
+    $ pip install git+https://github.com/laughk/footprint.git
 
 Usage
 --------
