@@ -37,7 +37,7 @@ Usage
 
    .. code:: console
 
-      $ footprint --help
+      $ foot --help
       usage: footprint [-h] [-f FROM_STR] [-t TO_STR] [-P] [--gl]
 
       optional arguments:
