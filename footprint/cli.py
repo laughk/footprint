@@ -64,8 +64,6 @@ def date_parser(date_str, timezone):
     else:
         date_result = today
 
-    date_result = timezone.localize(date_result)
-
     return date_result
 
 
