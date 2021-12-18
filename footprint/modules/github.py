@@ -28,8 +28,8 @@ class footprintGithub(Github):
         message_info = {}
         for event in self.github_user.get_events():
 
-            from_delta = from_ - timezone.localize(event.created_at)
-            to_delta = to_ - timezone.localize(event.created_at)
+            from_delta = from_ - event.created_at
+            to_delta = to_ - event.created_at
 
             if from_delta.days <= 0 and to_delta.days >= 0:
                 if needs_private or event.raw_data['public']:
